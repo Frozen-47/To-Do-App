@@ -177,6 +177,7 @@ fun TaskRow(
             modifier = Modifier
                 .clickable { onDelete() }
                 .padding(start = 16.dp, end = 8.dp)
+
         )
     }
 }
