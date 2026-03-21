@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt") // Required for Room Database code generation
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -61,7 +61,7 @@ dependencies {
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    "kapt"("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 
     // ViewModel integration for Jetpack Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
