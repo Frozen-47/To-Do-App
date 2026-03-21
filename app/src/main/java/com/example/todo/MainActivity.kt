@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels // <-- ADD THIS IMPORT
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,22 +22,28 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    // BULLETPROOF WAY to initialize the ViewModel
+    private val taskViewModel: TaskViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TerminalTodoApp()
+            // Pass the initialized ViewModel into your UI
+            TerminalTodoApp(viewModel = taskViewModel)
         }
     }
 }
 
 @Composable
-fun TerminalTodoApp(viewModel: TaskViewModel = viewModel()) {
+fun TerminalTodoApp(viewModel: TaskViewModel) { // <-- REMOVE the "= viewModel()" here
     val tasks by viewModel.tasks.collectAsState()
     var inputText by remember { mutableStateOf("") }
+
+    // ... THE REST OF YOUR CODE STAYS EXACTLY THE SAME ...
 
     // Terminal Colors matching your CSS
     val bgDark = Color(0xFF000000)
