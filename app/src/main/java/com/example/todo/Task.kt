@@ -1,4 +1,12 @@
 package com.example.todo
 
-class Task {
-}
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "tasks")
+data class Task(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val text: String,
+    val isCompleted: Boolean = false,
+    val timestamp: Long = System.currentTimeMillis()
+)

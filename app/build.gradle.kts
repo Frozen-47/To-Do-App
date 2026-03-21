@@ -1,21 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt") // ADDED: Required for Room Database code generation
+    id("kotlin-kapt") // Required for Room Database code generation
 }
 
 android {
     namespace = "com.example.todo"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.todo"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -34,6 +31,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -57,12 +57,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // ADDED: Room Database components
+    // Room Database components
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    "kapt"("androidx.room:room-compiler:$roomVersion")
 
-    // ADDED: ViewModel integration for Jetpack Compose
+    // ViewModel integration for Jetpack Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
 }
