@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val text: String,
-    val details: String = "", // Added for task descriptions
+    val details: String = "",
+    val priority: Int = 1, // 0=None, 1=Info(Green), 2=Warn(Yellow), 3=Crit(Red)
     val isCompleted: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )
