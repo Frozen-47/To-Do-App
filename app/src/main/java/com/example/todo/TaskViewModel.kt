@@ -17,12 +17,12 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             initialValue = emptyList()
         )
 
-    fun addTask(text: String) {
+    // Inside TaskViewModel.kt...
+    fun addTask(text: String, details: String = "") {
         viewModelScope.launch {
-            dao.insertTask(Task(text = text))
+            dao.insertTask(Task(text = text, details = details))
         }
     }
-
     fun toggleTask(task: Task) {
         viewModelScope.launch {
             dao.updateTask(task.copy(isCompleted = !task.isCompleted))
