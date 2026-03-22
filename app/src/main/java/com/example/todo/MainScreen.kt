@@ -6,11 +6,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -18,7 +18,9 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -109,7 +111,7 @@ fun MainScreen(viewModel: TaskViewModel) {
     }
 }
 
-// ── Overview card ─────────────────────────────────────────────────────────────
+// ── Overview card (Minimal Design) ───────────────────────────────────────────
 
 @Composable
 private fun OverviewCard(tasks: List<Task>, colors: AppColors) {
@@ -120,49 +122,47 @@ private fun OverviewCard(tasks: List<Task>, colors: AppColors) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colors.bg) // Block tasks from showing behind the bottom bar
+            .background(colors.bg) // Completely seamless with the app background
+            .navigationBarsPadding() // Adapts to system gestures/bars properly
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .navigationBarsPadding() // Adapts to system gestures/bars properly
-                .border(1.dp, colors.border, RectangleShape)
-                .padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
-            Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
                 Text(
-                    text = "OVERVIEW",
-                    color = colors.mutedFg,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp,
-                    fontFamily = FontFamily.Monospace,
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = "Task Progress",
+                    text = "Daily Progress",
                     color = colors.fg,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W600,
-                    letterSpacing = (-0.5).sp,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 0.5.sp
                 )
                 Text(
-                    text = "$completed of $total completed",
+                    text = "$completed / $total",
                     color = colors.mutedFg,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(top = 2.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace
                 )
             }
 
-            CircularProgressIndicator(
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Ultra-thin, sleek linear progress bar
+            LinearProgressIndicator(
                 progress = { progress },
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp)), // Softly rounded edges on the line
                 color = colors.fg,
-                strokeWidth = 3.dp,
-                trackColor = colors.border,
+                trackColor = colors.border.copy(alpha = 0.3f),
+                strokeCap = StrokeCap.Round
             )
         }
     }
@@ -170,7 +170,7 @@ private fun OverviewCard(tasks: List<Task>, colors: AppColors) {
 
 // ── Tab row ───────────────────────────────────────────────────────────────────
 
-private val TABS = listOf("ALL" to "ALL TASKS", "STARRED" to "STARRED")
+private val TABS = listOf("STARRED" to "★", "ALL" to "ALL TASKS")
 
 @Composable
 private fun TaskTabs(
@@ -180,10 +180,17 @@ private fun TaskTabs(
 ) {
     val selectedIndex = TABS.indexOfFirst { it.first == currentTab }.coerceAtLeast(0)
 
-    TabRow(
+    // Calculate the custom widths
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val starTabWidth = 72.dp // Narrow width just for the star
+    val allTasksTabWidth = screenWidth - starTabWidth // The rest of the screen goes to ALL TASKS
+
+    ScrollableTabRow(
+        modifier = Modifier.fillMaxWidth().statusBarsPadding(),
         selectedTabIndex = selectedIndex,
         containerColor = colors.bg,
         contentColor = colors.fg,
+        edgePadding = 0.dp,
         divider = { HorizontalDivider(color = colors.border) },
         indicator = { positions ->
             if (positions.isNotEmpty()) {
@@ -198,6 +205,7 @@ private fun TaskTabs(
         TABS.forEach { (key, label) ->
             val selected = currentTab == key
             Tab(
+                modifier = Modifier.width(if (key == "STARRED") starTabWidth else allTasksTabWidth),
                 selected = selected,
                 onClick = { onTabSelected(key) },
                 text = {
@@ -206,6 +214,7 @@ private fun TaskTabs(
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                         color = if (selected) colors.fg else colors.mutedFg,
                         letterSpacing = 1.sp,
+                        fontSize = if (key == "STARRED") 16.sp else 18.sp
                     )
                 },
             )

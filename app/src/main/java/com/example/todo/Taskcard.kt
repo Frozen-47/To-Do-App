@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/todo/ui/components/Taskcard.kt
 package com.example.todo.ui.components
 
 import androidx.compose.foundation.background
@@ -52,17 +53,19 @@ fun TaskCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min) // Aligns the height of the row to match its intrinsic content naturally
             .background(Color.Transparent)
             .border(1.dp, colors.border, RectangleShape)
             .clickable(onClick = onToggle)
-            .padding(end = 12.dp),
+            .padding(end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Priority indicator bar
         Box(
             modifier = Modifier
                 .width(4.dp)
-                .heightIn(min = 60.dp)
+                .fillMaxHeight()
+                .defaultMinSize(minHeight = 60.dp)
                 .background(
                     if (task.isCompleted) colors.border
                     else colors.fg.copy(alpha = priorityAlpha)
@@ -74,7 +77,8 @@ fun TaskCard(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 16.dp),
+                .padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.Center // Ensures all text lines are grouped and centered
         ) {
             Text(
                 text = task.text,
@@ -100,26 +104,26 @@ fun TaskCard(
                     fontSize = 11.sp,
                     fontFamily = FontFamily.Monospace,
                     color = colors.mutedFg,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 6.dp),
                 )
             }
         }
 
-        IconButton(onClick = onToggleStar, modifier = Modifier.size(32.dp)) {
+        IconButton(onClick = onToggleStar, modifier = Modifier.size(36.dp)) {
             Icon(
                 imageVector = if (task.isStarred) Icons.Filled.Star else Icons.Outlined.StarBorder,
                 contentDescription = if (task.isStarred) "Unstar" else "Star",
                 tint = if (task.isStarred) colors.fg else colors.mutedFg.copy(alpha = 0.5f),
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(22.dp),
             )
         }
 
-        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
             Icon(
                 imageVector = Icons.Outlined.Close,
                 contentDescription = "Delete",
                 tint = colors.mutedFg.copy(alpha = 0.5f),
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(20.dp),
             )
         }
     }
