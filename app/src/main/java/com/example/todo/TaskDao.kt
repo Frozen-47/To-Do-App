@@ -16,7 +16,7 @@ interface TaskDao {
     fun searchTasks(query: String): Flow<List<Task>>
 
     @Insert
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(task: Task): Long
 
     @Delete
     suspend fun deleteTask(task: Task)

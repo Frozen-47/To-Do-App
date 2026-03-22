@@ -34,10 +34,14 @@ class TaskViewModel(application: Application, private val taskDao: TaskDao) : An
     fun addTask(text: String, details: String = "", priority: Int = 1, dueDate: Long? = null, isStarred: Boolean = false, recurrence: String = "NONE") {
         viewModelScope.launch {
             val task = Task(text = text, details = details, priority = priority, dueDate = dueDate, isStarred = isStarred, recurrence = recurrence)
-            taskDao.insertTask(task)
+            
+            // 1. Get the newly generated ID from the database
+            val newlyGeneratedId = taskDao.insertTask(task).toInt()
 
+            // 2. Schedule using the actual database ID
             if (dueDate != null && dueDate > System.currentTimeMillis()) {
-                scheduleNotification(task) // You'd need the actual inserted ID for perfect targeting, but this is a structural example
+                val scheduledTask = task.copy(id = newlyGeneratedId)
+                scheduleNotification(scheduledTask)
             }
         }
     }
