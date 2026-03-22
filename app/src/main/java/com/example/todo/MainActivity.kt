@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val database = AppDatabase.getDatabase(applicationContext)
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(database.taskDao()) as T
+            return TaskViewModel(application, database.taskDao()) as T
         }
     }
 
