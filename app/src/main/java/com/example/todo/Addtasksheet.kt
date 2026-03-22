@@ -57,7 +57,14 @@ private fun AddTaskForm(
     val timePickerState = rememberTimePickerState()
 
     fun combinedTimestamp(): Long? {
-        val base = selectedDateMillis ?: return null
+        val timeHasValue = timePickerState.hour != 0 || timePickerState.minute != 0
+
+        // Return null if neither Date nor Time was touched
+        if (selectedDateMillis == null && !timeHasValue) return null
+
+        // Default to today if time is selected but no specific date is chosen
+        val base = selectedDateMillis ?: System.currentTimeMillis()
+
         return Calendar.getInstance().apply {
             timeInMillis = base
             set(Calendar.HOUR_OF_DAY, timePickerState.hour)

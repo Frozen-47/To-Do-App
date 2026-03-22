@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/todo/MainScreen.kt
 package com.example.todo
 
 import androidx.compose.animation.AnimatedVisibility
@@ -52,10 +53,12 @@ fun MainScreen(viewModel: TaskViewModel) {
         Scaffold(
             containerColor = colors.bg,
             topBar = {
-                Column(Modifier.background(colors.bg)) {
-                    OverviewCard(tasks = tasks, colors = colors)
-                    TaskTabs(currentTab = currentTab, onTabSelected = viewModel::setTab, colors = colors)
-                }
+                // Top tabs isolated for a clean header
+                TaskTabs(currentTab = currentTab, onTabSelected = viewModel::setTab, colors = colors)
+            },
+            bottomBar = {
+                // Overview card moved to the bottom bar
+                OverviewCard(tasks = tasks, colors = colors)
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -90,7 +93,6 @@ fun MainScreen(viewModel: TaskViewModel) {
                         )
                     }
                 }
-                item { Spacer(Modifier.height(80.dp)) }
             }
         }
 
@@ -115,48 +117,54 @@ private fun OverviewCard(tasks: List<Task>, colors: AppColors) {
     val total = tasks.size
     val progress = if (total > 0) completed.toFloat() / total else 0f
 
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .padding(top = 32.dp)
-            .border(1.dp, colors.border, RectangleShape)
-            .padding(20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .background(colors.bg) // Block tasks from showing behind the bottom bar
     ) {
-        Column {
-            Text(
-                text = "OVERVIEW",
-                color = colors.mutedFg,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp,
-                fontFamily = FontFamily.Monospace,
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = "Task Progress",
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .navigationBarsPadding() // Adapts to system gestures/bars properly
+                .border(1.dp, colors.border, RectangleShape)
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Text(
+                    text = "OVERVIEW",
+                    color = colors.mutedFg,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp,
+                    fontFamily = FontFamily.Monospace,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = "Task Progress",
+                    color = colors.fg,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W600,
+                    letterSpacing = (-0.5).sp,
+                )
+                Text(
+                    text = "$completed of $total completed",
+                    color = colors.mutedFg,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+
+            CircularProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.size(54.dp),
                 color = colors.fg,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.W600,
-                letterSpacing = (-0.5).sp,
-            )
-            Text(
-                text = "$completed of $total completed",
-                color = colors.mutedFg,
-                fontSize = 13.sp,
-                modifier = Modifier.padding(top = 2.dp),
+                strokeWidth = 3.dp,
+                trackColor = colors.border,
             )
         }
-
-        CircularProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.size(54.dp),
-            color = colors.fg,
-            strokeWidth = 3.dp,
-            trackColor = colors.border,
-        )
     }
 }
 
