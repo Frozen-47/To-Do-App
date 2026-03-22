@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -43,19 +44,35 @@ class TaskViewModel(application: Application, private val taskDao: TaskDao) : An
                 val scheduledTask = task.copy(id = newlyGeneratedId)
                 scheduleNotification(scheduledTask)
             }
+            updateWidget()
         }
     }
 
     fun toggleTask(task: Task) {
-        viewModelScope.launch { taskDao.updateTask(task.copy(isCompleted = !task.isCompleted)) }
+        viewModelScope.launch { 
+            taskDao.updateTask(task.copy(isCompleted = !task.isCompleted))
+            updateWidget()
+        }
     }
 
     fun toggleStar(task: Task) {
-        viewModelScope.launch { taskDao.updateTask(task.copy(isStarred = !task.isStarred)) }
+        viewModelScope.launch { 
+            taskDao.updateTask(task.copy(isStarred = !task.isStarred))
+            updateWidget()
+        }
     }
 
     fun deleteTask(task: Task) {
-        viewModelScope.launch { taskDao.deleteTask(task) }
+        viewModelScope.launch { 
+            taskDao.deleteTask(task)
+            updateWidget()
+        }
+    }
+
+    private fun updateWidget() {
+        viewModelScope.launch {
+            TodoWidget().updateAll(getApplication())
+        }
     }
 
     private fun scheduleNotification(task: Task) {
