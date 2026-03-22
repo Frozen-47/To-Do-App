@@ -18,6 +18,10 @@ interface TaskDao {
     @Query("SELECT * FROM tasks ORDER BY isStarred DESC, id DESC LIMIT 5")
     suspend fun getWidgetTasks(): List<Task>
 
+    // Used by ToggleTaskAction in the widget
+    @Query("SELECT * FROM tasks WHERE id = :id LIMIT 1")
+    suspend fun getTaskById(id: Int): Task?
+
     @Insert
     suspend fun insertTask(task: Task): Long
 
